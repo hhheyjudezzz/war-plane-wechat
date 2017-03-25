@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>打灰机</title>
+	<style type="text/css">
+		*{
+			margin:0;
+			padding:0;
+		}
+		html,body{
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<div id="music" style="display: none">
+		<audio id="game_music" src="audio/game_music.mp3"></audio>
+	</div>
+</body>
+<script type="text/javascript" src="js/object1.js"></script>
+<script type="text/javascript">
+	var canvas = document.getElementById("canvas");
+	var context = canvas.getContext("2d");
+
+	// 图片对象数组
+	// 主要用于给canvas绘制图像使用
+	var oArr = [];
+
+	var imgArr = ["bg.png","hero_fly_1.png","hero_fly_2.png","hero_blowup_1.png","hero_blowup_2.png","hero_blowup_3.png","hero_blowup_4.png","bullet1.png","enemy1_blowup_1.png","enemy1_blowup_2.png","enemy1_blowup_3.png","enemy1_blowup_4.png","enemy1_fly_1.png"];
+
+	loadingFn(imgArr, function(){
+
+		// 调用函数开始游戏
+		gameStartFn();
+		
+	});
+
+	// 游戏开始的函数
+	function gameStartFn(){
+		// 创建背景类的对象
+		var background = new Background();
+		// 创建飞机（玩家的飞机）
+		var hero = new Hero();
+		// 创建子弹
+		var bullet = new Bullet();
+		//创建敌机
+		var enemy = new Enemy();
+
+		animation();
+		function animation(){
+			// 绘制背景图
+			background.draw();
+			// 绘制玩家飞机
+			hero.draw();
+			// 绘制子弹
+			bullet.draw(hero);
+			enemy.draw();
+			window.requestAnimationFrame(animation);
+		}
+
+		// -----------------------------------
+		// 给canvas添加手势事件
+		canvas.addEventListener("touchstart",function(){
+			var touchStart = event.touches[0];
+			// 点击在canvas上手势坐标
+			var touchStartX = touchStart.clientX;
+			var touchStartY = touchStart.clientY;
+			// 计算差值
+			var differX = touchStartX - hero.x;
+			var differY = touchStartY - hero.y;
+
+			canvas.addEventListener("touchmove",function(){
+				var touchMove = event.touches[0];
+				// 移动手势时候的坐标
+				var touchMoveX = touchMove.clientX;
+				var touchMoveY = touchMove.clientY;
+
+				// 改变飞机的坐标(x,y)
+				hero.x = touchMoveX - differX;
+				hero.y = touchMoveY - differY;
+			},false);
+		},false);
+
+	}
+	//window.requestAnimationFrame(fn)
+
+	// 加载图片
+	function loadingFn(arr, fn){
+		// 计算图片数量
+		var number = 0;
+		// 遍历
+		for(var i = 0; i < arr.length; i++){
+			// 通过关键 new 创建图片对象
+			var img = new Image();
+			// 设置图片路径
+			img.src = "images/"+arr[i];
+
+			// 保存图片对象
+			oArr.push(img);
+
+			// 图片加载
+			img.onload = function(){
+				// 统计图片数量
+				number++;
+				// 判断是否加载完毕
+				if(number == arr.length){
+					fn && fn();
+				}
+			}
+		}
+	}
+
+
+	// ------------------------------------------
+	isMobileFn();
+	// 判断移动端
+	function isMobileFn(){
+		// 用浏览器嗅探判断
+		var userAgent = window.navigator.userAgent;
+		// 用数组保存关键字
+		var mobileArr = ["iPhone","Android","Windows Phone","iPad","iPod"];
+		// 遍历判断
+		// 判断移动端"Mobile"
+		if(userAgent.indexOf("Mobile") > -1){
+			// 如果是移动端就动态设置canvas的宽高
+			canvas.width = document.documentElement.clientWidth;
+			canvas.height = document.documentElement.clientHeight;
+			return false;
+		}
+		// 如果不是移动端，PC端 
+		// iphone6的尺寸
+		canvas.width = 320;
+		canvas.height = 480; 
+	}
+</script>
+</html>

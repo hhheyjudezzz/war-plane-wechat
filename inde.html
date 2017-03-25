@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>index布局</title>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		html,body{
+			overflow:hidden;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" ></canvas>
+	<div id="music" display = "none">
+		<audio id="game_music" src="audio/bullet.mp3"></audio>
+	</div>
+</body>
+<script type="text/javascript" src="js/object.js"></script>
+<script type="text/javascript">
+	var canvas = document.getElementById('canvas');
+	var context =canvas.getContext("2d");
+	var audio = document.getElementById('#game_music');
+	//.play()播放 .pause()暂停
+	//------------图片加载-----------
+	var imgArr = ["bg.png","bullet1.png","enemy1_blowup_1.png","enemy1_blowup_2.png","enemy1_blowup_3.png","enemy1_blowup_3.png","enemy1_blowup_4.png","enemy1_fly_1.png","hero_blowup_1.png","hero_blowup_2.png","hero_blowup_3.png","hero_blowup_4.png","hero_fly_1.png","hero_fly_2.png"];
+	var oArr = []; //保存img对象
+	var flyNum = 0;
+	loadingFn(imgArr,function(){
+		alert("加载完毕")
+		gameStartFn()
+	})
+	//----------游戏开始函数-----------
+	
+	function gameStartFn(){
+		var background = new Background();	
+		var fly = new Fly();	
+		var bullet = new Bullet();
+		var enemy = new Enemy();
+		
+		animation();
+		fly.touchstart()
+		 function animation(){
+		 	//绘制图画
+		 	background.draw();
+		 	fly.draw();
+		 	bullet.draw(fly);
+		 	enemy.draw(bullet);
+		 	window.requestAnimationFrame(animation);
+		 }
+		 
+	}
+	function loadingFn(arr,fn){  //fn为回调
+		var number = 0;
+		for(var i = 0;i<arr.length; i++){
+			var img = new Image();
+			img.src = "images/"+arr[i];
+			oArr.push(img)
+			img.onload = function(){
+				//统计图片数量
+				number++;
+				if(number == arr.length){
+					fn&fn()
+				}
+			}
+		}
+	}
+	//------------图片加载-----------
+	//-----------自适应，浏览器嗅探-----------
+	isMobileFn()
+	function isMobileFn(){
+		//浏览器嗅探
+		var userAgent = window.navigator.userAgent;
+		var mobileArr = ["iphone","iPad","Android","Window Phone","ipad","ipod"]
+		
+		if(userAgent.indexOf("Mobile")>-1){
+			//如果是移动端就动态设置canvas的宽高
+			// console.log(1111111)
+			canvas.width = document.documentElement.clientWidth;
+			canvas.height = document.documentElement.clientHeight;
+			return;    
+		}
+		//设置pc端的尺寸
+		canvas.width = 375;
+		canvas.height = 667;
+	}
+	//-----------自适应，浏览器嗅探-----------
+	//----------绘制背景----------
+
+</script>
+</html>
